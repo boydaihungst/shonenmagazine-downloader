@@ -16,6 +16,7 @@ Shonenmagazine-downloader script to download + deobfuscation images for manga fr
    - Firefox doesn't need to enable developer mode
    - Click on this link, and then click on the "Install" button to install user script:
      [shonenmagazine-downloader.user.js](https://raw.githubusercontent.com/boydaihungst/shonenmagazine-downloader/refs/heads/master/shonenmagazine-downloader.user.js)
+   - The first time you click download button, make sure to select `always allow` button.
 
 ### Usage
 
@@ -26,7 +27,3 @@ Shonenmagazine-downloader script to download + deobfuscation images for manga fr
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-```
-
-```
