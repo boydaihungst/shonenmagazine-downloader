@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Download Shonen Magazine manga as ZIP
 // @namespace    http://tampermonkey.net/
-// @version      2.0
+// @version      2.1
 // @description  Intercept fetch, collect images, and download them all as a zip with proper filenames from pocket.shonenmagazine.com/episode/*
 // @author       boydaihungst
 // @match        https://pocket.shonenmagazine.com/title/*/episode/*
@@ -78,29 +78,125 @@
       .map((x) => x[1]);
   }
 
+  /**
+   * Replicates the website's logic for calculating the dimensions of the unscrambled image.
+   * This function ensures the final dimensions are perfectly divisible by the tiles,
+   * effectively cropping out any "leftover" pixels from the original image.
+   *
+   * @param {number} originalWidth - The width of the scrambled source image.
+   * @param {number} originalHeight - The height of the scrambled source image.
+   * @param {number} tileCount - The number of tiles per side (e.g., 4 for a 4x4 grid).
+   * @returns {{width: number, height: number} | null} The calculated dimensions or null if image is too small.
+   */
+  const calculateDescrambleDimensions = (
+    originalWidth,
+    originalHeight,
+    tileCount = 4,
+  ) => {
+    const y = 8; // This is the constant 'y' from the website's source code.
+    if (originalWidth < tileCount * y || originalHeight < tileCount * y) {
+      return null; // Image is too small to descramble.
+    }
+    const tempWidth = Math.floor(originalWidth / y);
+    const tempHeight = Math.floor(originalHeight / y);
+
+    const finalTileableWidth = Math.floor(tempWidth / tileCount);
+    const finalTileableHeight = Math.floor(tempHeight / tileCount);
+
+    return {
+      width: finalTileableWidth * y,
+      height: finalTileableHeight * y,
+    };
+  };
+
+  /**
+   * De-scrambles a shonenmagazine image blob.
+   *
+   * @param {Blob} imgBlob - The scrambled image data.
+   * @param {number} scrambleSeed - The seed used for scrambling.
+   * @param {number} tileCount - The number of tiles per side (default is 4).
+   * @returns {Promise<Blob>} A new blob with the de-scrambled image data.
+   */
   async function unscrambleImage(imgBlob, scrambleSeed, tileCount = 4) {
     const img = await blobToImage(imgBlob);
-    const { width, height } = img;
+
+    // 1. Calculate the correct dimensions for the canvas using the website's exact logic.
+    const descrambleDims = calculateDescrambleDimensions(
+      img.width,
+      img.height,
+      tileCount,
+    );
+
+    // If the image is too small or dimensions can't be calculated, return the original.
+    if (!descrambleDims) {
+      console.warn("Image too small to descramble, returning original.");
+      return imgBlob;
+    }
+
     const ctx = Object.assign(document.createElement("canvas"), {
-      width,
-      height,
+      width: img.width,
+      height: img.height,
     }).getContext("2d");
 
-    // tile dimensions
-    const tileW = Math.floor(width / tileCount);
-    const tileH = Math.floor(height / tileCount);
+    const { width: tileW, height: tileH } = descrambleDims;
+    let leftoverW = img.width - tileW * tileCount;
+    let leftoverH = img.height - tileH * tileCount;
 
+    if (leftoverW) {
+      console.log("leftoverW", leftoverW);
+      console.log("leftoverH", leftoverH);
+      // oneMoreTile = width - tileW * tileCount;
+    }
+    // 3. Get the shuffled order of tiles.
     const order = shuffleOrder(tileCount ** 2, scrambleSeed);
 
+    // 4. Reassemble the image by drawing the shuffled tiles in the correct order.
     for (let i = 0; i < order.length; i++) {
-      const srcX = (order[i] % tileCount) * tileW;
-      const srcY = Math.floor(order[i] / tileCount) * tileH;
-      const destX = (i % tileCount) * tileW;
-      const destY = Math.floor(i / tileCount) * tileH;
+      const sourceTileIndex = order[i];
+      const destTileIndex = i;
+
+      // Calculate the source (scrambled) tile's top-left corner.
+      const srcX = (sourceTileIndex % tileCount) * tileW;
+      const srcY = Math.floor(sourceTileIndex / tileCount) * tileH;
+
+      // Calculate the destination (unscrambled) tile's top-left corner.
+      const destX = (destTileIndex % tileCount) * tileW;
+      const destY = Math.floor(destTileIndex / tileCount) * tileH;
+
       ctx.drawImage(img, srcX, srcY, tileW, tileH, destX, destY, tileW, tileH);
     }
 
-    return await canvasToBlob(ctx.canvas, "image/jpeg", 0.9);
+    // copy rightmost leftover vertical strip (if any)
+    if (leftoverW > 0) {
+      ctx.drawImage(
+        img,
+        img.width - leftoverW,
+        0, // source
+        leftoverW,
+        img.height,
+        img.width - leftoverW,
+        0, // dest
+        leftoverW,
+        img.height,
+      );
+    }
+
+    // copy bottom leftover horizontal strip (if any)
+    if (leftoverH > 0) {
+      ctx.drawImage(
+        img,
+        0,
+        img.height - leftoverH, // source
+        img.width,
+        leftoverH,
+        0,
+        img.height - leftoverH, // dest
+        img.width,
+        leftoverH,
+      );
+    }
+
+    return await canvasToBlob(ctx.canvas, "image/jpeg", 1.0);
   }
 
   const originalFetch = unsafeWindow.fetch;
@@ -124,12 +220,18 @@
         if (contentType && contentType.includes("application/json")) {
           data = await clonedResponse.json();
         } else {
-          alert("Not JSON");
+          console.warn("Response was not JSON for episode viewer API.");
+          return response;
         }
-        if (data.page_list) {
+
+        if (data && data.page_list) {
           scrambleSeed = data.scramble_seed;
-          let matchedUrls = [];
-          matchedUrls = data.page_list;
+          const matchedUrls = data.page_list;
+
+          // Check if the button already exists to prevent duplicates
+          if (document.getElementById("custom-download-button")) {
+            return response;
+          }
 
           const downloadButton = document.createElement("button");
           downloadButton.id = "custom-download-button";
@@ -150,40 +252,47 @@
           downloadButton.addEventListener("click", async () => {
             downloadButton.disabled = true;
             if (matchedUrls.length === 0) {
-              alert("No images intercepted yet!");
+              alert("No image URLs found in the API response!");
               downloadButton.textContent = "Download All Images as ZIP";
               downloadButton.disabled = false;
               return;
             }
 
             const zip = new JSZip();
+            const title =
+              document.querySelector('h2[class*="EpisodeHeader-title"]')
+                ?.textContent ||
+              document.title ||
+              "manga";
 
-            let i = 0;
-            for (const imgUrl of matchedUrls) {
-              downloadButton.textContent = `Downloading (${i}/${matchedUrls.length})...`;
+            for (let i = 0; i < matchedUrls.length; i++) {
+              const imgUrl = matchedUrls[i];
+              downloadButton.textContent = `Downloading (${i + 1}/${
+                matchedUrls.length
+              })...`;
               try {
                 const imgRawRes = await gmFetch(imgUrl, {
                   responseType: "blob",
                 });
                 const blob = await imgRawRes.response;
+
+                // Make sure to convert scrambleSeed to a number if it's a string
                 const imgBlob = await unscrambleImage(blob, +scrambleSeed);
 
-                const filename = `${i}.jpg`;
+                // Pad page numbers with leading zeros for correct sorting
+                const pageNum = String(i + 1).padStart(3, "0");
+                const filename = `${pageNum}.jpg`;
 
-                zip
-                  .folder(
-                    `${document.getElementsByTagName("title")[0].innerText || "image"}`,
-                  )
-                  .file(filename, imgBlob);
+                zip.folder(title).file(filename, imgBlob);
               } catch (e) {
-                console.error("Failed to fetch image:", imgUrl, e);
+                console.error("Failed to fetch or process image:", imgUrl, e);
               }
-              i++;
             }
+            downloadButton.textContent = `Zipping...`;
             zip.generateAsync({ type: "blob" }).then((content) => {
               const a = document.createElement("a");
               a.href = URL.createObjectURL(content);
-              a.download = "images.zip";
+              a.download = `${title}.zip`;
               document.body.appendChild(a);
               a.click();
               document.body.removeChild(a);
