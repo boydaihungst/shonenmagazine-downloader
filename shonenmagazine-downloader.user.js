@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Download Shonen Magazine manga as ZIP
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.2
 // @description  Intercept fetch, collect images, and download them all as a zip with proper filenames from pocket.shonenmagazine.com/episode/*
 // @author       boydaihungst
 // @match        https://pocket.shonenmagazine.com/title/*/episode/*
@@ -229,11 +229,15 @@
           const matchedUrls = data.page_list;
 
           // Check if the button already exists to prevent duplicates
-          if (document.getElementById("custom-download-button")) {
-            return response;
+          let downloadButton = document.getElementById(
+            "custom-download-button",
+          );
+          if (downloadButton) {
+            document.body.removeChild(downloadButton);
+            downloadButton.remove();
           }
 
-          const downloadButton = document.createElement("button");
+          downloadButton = document.createElement("button");
           downloadButton.id = "custom-download-button";
           downloadButton.textContent = "Download All Images as ZIP";
           downloadButton.style.position = "fixed";
