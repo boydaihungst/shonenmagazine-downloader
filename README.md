@@ -1,6 +1,6 @@
-# Shonenmagazine-downloader
+# Shonenmagazine-ichicomi-downloader
 
-Shonenmagazine-downloader script to download + deobfuscation images for manga from shonenmagazine.com
+Shonenmagazine-downloader script to download + deobfuscation images for manga from shonenmagazine.com and ichicomi.com
 
 ## Installation
 
