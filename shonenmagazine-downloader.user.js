@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Download Shonen Magazine, ichicomi manga as ZIP
 // @namespace    http://tampermonkey.net/
-// @version      3.1
+// @version      3.2
 // @description  Intercept fetch, collect images, and download them all as a zip with proper filenames from pocket.shonenmagazine.com and ichicomi.com
 // @author       boydaihungst
 // @match        https://pocket.shonenmagazine.com/title/*/episode/*
