@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Download Shonen Magazine, ichicomi manga as ZIP
 // @namespace    http://tampermonkey.net/
-// @version      3.3
+// @version      3.4
 // @description  Intercept fetch, collect images, and download them all as a zip with proper filenames from pocket.shonenmagazine.com and ichicomi.com
 // @author       boydaihungst
 // @match        https://pocket.shonenmagazine.com/title/*/episode/*
@@ -373,6 +373,7 @@
                             "manga"
                         ).replace(/[<>:"/\\|?*]/g, "-");
 
+                        await changeSliderValue(0, false);
                         for (let i = 0; i < matchedUrls.length; i++) {
                             const imgUrl = matchedUrls[i];
                             downloadButton.textContent = `Downloading (${i + 1}/${
