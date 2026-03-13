@@ -14,7 +14,7 @@ Shonenmagazine and ichicomi downloader script to download + deobfuscation images
 ### Installation
 
 <b>Installation Video</b>: 
- - Windows: https://jumpshare.com/s/xytC9x5rzJ3dT20mvM7g
+ - Windows: https://youtu.be/_yQYudOzpFg
  - Linux: https://youtu.be/2JdW3b53xFg
 
 1. Tampermonkey and user script
