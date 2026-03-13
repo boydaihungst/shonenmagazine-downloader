@@ -13,7 +13,9 @@ Shonenmagazine and ichicomi downloader script to download + deobfuscation images
 - ichicomi works on both Chrome and Firefox based browsers.
 ### Installation
 
-<b>Installation Video</b>: https://jumpshare.com/s/xytC9x5rzJ3dT20mvM7g
+<b>Installation Video</b>: 
+ - Windows: https://jumpshare.com/s/xytC9x5rzJ3dT20mvM7g
+ - Linux: https://youtu.be/2JdW3b53xFg
 
 1. Tampermonkey and user script
    - Download Tampermonkey for your browser from [here](https://www.tampermonkey.net/). 
