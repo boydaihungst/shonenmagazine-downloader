@@ -379,7 +379,10 @@
                 matchedUrls.length
                         })...`;
                             try {
-
+                                const imgRawRes = await gmFetch(imgUrl, {
+                                    responseType: "blob",
+                                });
+                                const blob = await imgRawRes.response;
                                 const imgBlob = await getImageByIndex(i);
 
                                 // Pad page numbers with leading zeros for correct sorting
