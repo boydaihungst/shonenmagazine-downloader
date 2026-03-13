@@ -7,11 +7,13 @@ Shonenmagazine and ichicomi downloader script to download + deobfuscation images
 ### Requirements
 
 - Tampermonkey
-- <b>Shonenmagazine only works on Chrome and also needs to install:</b> 
+- <b>Shonenmagazine only works on Chrome (or chrome based browser) and also needs to install:</b> 
   - Always active Window - Always Visible: https://chromewebstore.google.com/detail/always-active-window-alwa/ehllkhjndgnlokhomdlhgbineffifcbj
   - Run chrome with Disabled security flag to be able to save images from protected canvas.
-  
+- ichicomi works on both Chrome and Firefox based browsers.
 ### Installation
+
+<b>Installation Video</b>: https://jumpshare.com/s/xytC9x5rzJ3dT20mvM7g
 
 1. Tampermonkey and user script
    - Download Tampermonkey for your browser from [here](https://www.tampermonkey.net/). 
@@ -30,6 +32,7 @@ Shonenmagazine and ichicomi downloader script to download + deobfuscation images
       - Clone Chrome shortcut on desktop, change it name to `Unsafe Google Chrome`
       - Right click on it. In the `Target:` input box, add: ` --disable-web-security --user-data-dir="C:\temp"` at the end. For example: `"C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C:\temp"`. Then click `Ok` button to save.
       - From now on, you only use that `Unsafe Google Chrome` to download manga from `Shonenmagazine website`. For any other jobs, just use the normal `Google Chrome` desktop shortcut. Be aware that it's unsafe for normal jobs.
+      
    
 ### Usage
 
