@@ -29,11 +29,15 @@ Shonenmagazine and ichicomi downloader script to download + deobfuscation images
    - Install Always active Window - Always Visible extension ([click here](https://chromewebstore.google.com/detail/always-active-window-alwa/ehllkhjndgnlokhomdlhgbineffifcbj))
       - Go to https://pocket.shonenmagazine.com/ -> click `Always active Window - Always Visible` extension to active it (blue rectangle means it's activated for this website).
    - Run chrome with Disabled security flag:
-      - Clone Chrome shortcut on desktop, change it name to `Unsafe Google Chrome`
-      - Right click on it. In the `Target:` input box, add: ` --disable-web-security --user-data-dir="C:\temp"` at the end. For example: `"C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C:\temp"`. Then click `Ok` button to save.
-      - From now on, you only use that `Unsafe Google Chrome` to download manga from `Shonenmagazine website`. For any other jobs, just use the normal `Google Chrome` desktop shortcut. Be aware that it's unsafe for normal jobs.
+      - Windows:
+        - Clone Chrome shortcut on desktop, change it name to `Unsafe Google Chrome`
+        - Right click on it. In the `Target:` input box, add: ` --disable-web-security --user-data-dir="C:\temp"` at the end. For example: `"C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C:\temp"`. Then click `Ok` button to save.
+        - From now on, you only use that `Unsafe Google Chrome` to download manga from `Shonenmagazine website`. For any other jobs, just use the normal `Google Chrome` desktop shortcut. Be aware that it's unsafe for normal jobs.
       
-   
+       - Linux:
+         - Start Unsafe Google Chrome: `google-chrome-stable --disable-web-security --user-data-dir="/tmp/chrome_dev"`
+         - `google-chrome` or `google-chrome-stable` depends on your distro.
+          
 ### Usage
 
 - Open any chapter of the manga in the browser: For example: https://pocket.shonenmagazine.com/episode/3270375685457628827
