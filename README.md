@@ -22,6 +22,7 @@ Shonenmagazine and ichicomi downloader script to download + deobfuscation images
    - Chrome users also need
       - Enable developer mode in your chrome browser https://www.tampermonkey.net/faq.php#Q209
       - Allow `Allow User Scripts`: To go to Settings > Extensions > Manage Extensions > Click `Details` button under `Tampermonkey` extension card > Switch `Allow User Scripts` on.
+      - Restart chrome after that.
    - Firefox doesn't need to enable developer mode.
    - Click on this link, and then click on the "Install" button to install user script:
      [shonenmagazine-downloader.user.js](https://raw.githubusercontent.com/boydaihungst/shonenmagazine-downloader/refs/heads/master/shonenmagazine-downloader.user.js)
@@ -33,13 +34,13 @@ Shonenmagazine and ichicomi downloader script to download + deobfuscation images
    - Run chrome with Disabled security flag:
       - Windows:
         - Clone Chrome shortcut on desktop, change it name to `Unsafe Google Chrome`
-        - Right click on it. In the `Target:` input box, add: ` --disable-web-security --user-data-dir="C:\temp"` at the end. For example: `"C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C:\temp"`. Then click `Ok` button to save.
+        - Right click on it. In the `Target:` input box, add: ` --disable-web-security --user-data-dir="C:\google-chrome-unsafe"` at the end. For example: `"C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C:\google-chrome-unsafe"`. Then click `Ok` button to save.
         - From now on, you only use that `Unsafe Google Chrome` to download manga from `Shonenmagazine website`. For any other jobs, just use the normal `Google Chrome` desktop shortcut. Be aware that it's unsafe for normal jobs.
       
        - Linux:
-         - Start Unsafe Google Chrome: `google-chrome-stable --disable-web-security --user-data-dir="/tmp/chrome_dev"`
+         - Start Unsafe Google Chrome: `google-chrome-stable --disable-web-security --user-data-dir="$HOME/.config/google-chrome-unsafe"`
          - `google-chrome` or `google-chrome-stable` depends on your distro.
-          
+    
 ### Usage
 
 - Open any chapter of the manga in the browser: For example: https://pocket.shonenmagazine.com/episode/3270375685457628827
